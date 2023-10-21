@@ -24,7 +24,7 @@ public class Otranto_Logger
         unityActivity = uActivity;
     }
 
-    public void CreateAlert()
+    public void CreateAlert(AlertCallback alertCallback)
     {
         Log.v(LOGTAG,"Android Create Alert");
         builder = new AlertDialog.Builder(unityActivity);
@@ -36,6 +36,7 @@ public class Otranto_Logger
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Log.v(LOGTAG,"Clicked From Pluggin - YES");
+                        alertCallback.onPositive("Clicked Yes");
                         dialogInterface.cancel();
                     }
                 }
@@ -46,6 +47,7 @@ public class Otranto_Logger
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Log.v(LOGTAG,"Clicked From Pluggin - NO");
+                        alertCallback.onNegative("Clicked NO");
                         dialogInterface.cancel();
                     }
                 }

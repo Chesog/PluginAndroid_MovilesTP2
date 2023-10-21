@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -34,7 +35,7 @@ public class TestLoggerPlugin : MonoBehaviour
             Debug.Log("Unity Java Class Created");
         }
     }
-
+    
     public void RunPlugin()
     {
         Debug.Log("Runing Plugin");
@@ -45,7 +46,7 @@ public class TestLoggerPlugin : MonoBehaviour
     public void CreateAlert()
     {
         Debug.Log("Unity Alert Created");
-        _pluginInstance.Call("CreateAlert");
+        _pluginInstance.Call("CreateAlert",new AndroidPluginCallback{});
     }
 
     public void ShowAlert()
@@ -54,4 +55,19 @@ public class TestLoggerPlugin : MonoBehaviour
         _pluginInstance.Call("ShowAlert");
     }
 #endif
+}
+
+public class AndroidPluginCallback : AndroidJavaProxy
+{
+    public AndroidPluginCallback() : base("com.otranto_loger_plugin.AlertCallback") { }
+
+    public void onPositive(String message)
+    {
+     Debug.Log("On Unity Positive - " + message);   
+    }
+
+    public void onNegative(String message)
+    {
+        Debug.Log("On Unity Negative - " + message); 
+    }
 }
