@@ -1,20 +1,62 @@
 package com.otranto_loger_plugin;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Otranto_Logger
 {
     static final String LOGTAG = "OTRLGG";
+    static Otranto_Logger _instance = null;
+    private static Activity unityActivity;
+    AlertDialog.Builder builder;
     List<String> warnings = new ArrayList<>();
     List <String> errors = new ArrayList<>();
     List <String> debug = new ArrayList<>();
-    static Otranto_Logger _instance = null;
 
-    public static Otranto_Logger GetInstance()
+    public static void reciveUnityActivity(Activity uActivity)
     {
-        if (_instance == null)
-            _instance = new Otranto_Logger();
-        return _instance;
+        unityActivity = uActivity;
+    }
+
+    public void CreateAlert()
+    {
+        Log.v(LOGTAG,"Android Create Alert");
+        builder = new AlertDialog.Builder(unityActivity);
+        builder.setMessage("Example Text");
+        builder.setCancelable(true);
+        builder.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.v(LOGTAG,"Clicked From Pluggin - YES");
+                        dialogInterface.cancel();
+                    }
+                }
+        );
+        builder.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.v(LOGTAG,"Clicked From Pluggin - NO");
+                        dialogInterface.cancel();
+                    }
+                }
+        );
+    }
+
+    public void ShowAlert()
+    {
+        Log.v(LOGTAG,"Android Show Alert");
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public void SendLog(String log)

@@ -1,6 +1,4 @@
-using System;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TestLoggerPlugin : MonoBehaviour
@@ -11,7 +9,9 @@ public class TestLoggerPlugin : MonoBehaviour
     
 
     private AndroidJavaClass _pluginClass;
+    private AndroidJavaClass _pluginUnityClass;
     private AndroidJavaObject _pluginInstance;
+    private AndroidJavaObject _unityActivity;
     public TextMeshProUGUI _label;
 
     private void Start()
@@ -19,7 +19,19 @@ public class TestLoggerPlugin : MonoBehaviour
         if (Application.platform == RuntimePlatform.Android)
         {
             _pluginClass = new AndroidJavaClass(className);
-            _pluginInstance = _pluginClass.CallStatic<AndroidJavaObject>("GetInstance");
+            _pluginUnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            _unityActivity = _pluginUnityClass.GetStatic<AndroidJavaObject>("currentActivity");
+            _pluginInstance = new AndroidJavaObject(className);
+            if (_pluginInstance == null)
+            {
+                Debug.Log("Plugin Instance is NULL");
+                return;
+            }
+
+            _pluginInstance.CallStatic("reciveUnityActivity",_unityActivity);
+            
+            CreateAlert();
+            Debug.Log("Unity Java Class Created");
         }
     }
 
@@ -28,6 +40,18 @@ public class TestLoggerPlugin : MonoBehaviour
         Debug.Log("Runing Plugin");
         if (Application.platform == RuntimePlatform.Android){_label.text = _pluginInstance.Call<string>("GetLOGTAG");}
      
+    }
+
+    public void CreateAlert()
+    {
+        Debug.Log("Unity Alert Created");
+        _pluginInstance.Call("CreateAlert");
+    }
+
+    public void ShowAlert()
+    {
+        Debug.Log("Unity Alert Show");
+        _pluginInstance.Call("ShowAlert");
     }
 #endif
 }

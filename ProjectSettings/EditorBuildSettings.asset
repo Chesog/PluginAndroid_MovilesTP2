@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/AndroidPlug.unity
+    guid: 63d59d8f6902bc64687ef53e94278e7d
   m_configObjects: {}
