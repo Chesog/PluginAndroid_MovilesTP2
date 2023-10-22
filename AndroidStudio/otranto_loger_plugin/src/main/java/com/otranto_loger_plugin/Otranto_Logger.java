@@ -91,7 +91,9 @@ public class Otranto_Logger
         return LOGTAG;
     }
 
-    private void writeToFile(String data,String fileName, Context context) {
+    private void writeToFile(String data,String fileName)
+    {
+        Context context = unityActivity.getApplicationContext();
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(fileName + ".txt", Context.MODE_PRIVATE));
             outputStreamWriter.write(data);
@@ -102,8 +104,9 @@ public class Otranto_Logger
         }
     }
 
-    private String readFromFile(String fileName,Context context) {
-
+    private String readFromFile(String fileName)
+    {
+        Context context = unityActivity.getApplicationContext();
         String ret = "";
 
         try {
