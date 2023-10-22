@@ -127,7 +127,7 @@ public class TestLoggerPlugin : MonoBehaviour
 
     public  void SendToReadFile()
     {
-        _label.text = _pluginInstance.Call<string>("readFromFile", "Log");
+        _label.text = _pluginInstance.Call<string>("readFromFile", "Log") + " Read File";
         
         //_label.text = _pluginInstance.Call<string>("readFromFile", "Warning");
         //_label.text = _pluginInstance.Call<string>("readFromFile", "Error");
