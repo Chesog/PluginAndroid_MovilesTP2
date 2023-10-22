@@ -36,6 +36,7 @@ public class TestLoggerPlugin : MonoBehaviour
     private AndroidJavaObject _unityActivity;
     public TextMeshProUGUI _label;
     private Coroutine showLogs;
+    private bool ToShowLogs;
 
     private void Start()
     {
@@ -135,7 +136,7 @@ public class TestLoggerPlugin : MonoBehaviour
         string temp;
         temp = _pluginInstance.Call<string>("readFromFile", "Logs.txt");
         tempArray = temp.Split("\n");
-
+        ToShowLogs = true;
         showLogs = StartCoroutine(ShowLogsCorrutine());
     }
 
@@ -143,16 +144,18 @@ public class TestLoggerPlugin : MonoBehaviour
     {
         for (int i = 0; i < tempArray.Length; i++)
         {
-            _label.text = "lOG N° " + i +" : " + tempArray[i];
-            float maxTime = 2.5f;
-            float currentTime = 0.0f;
-            while (currentTime < maxTime)
+            if (ToShowLogs)
             {
-                currentTime += Time.deltaTime;
-                yield return null;
+                _label.text = "lOG N° " + i +" : " + tempArray[i];
+                float maxTime = 2.5f;
+                float currentTime = 0.0f;
+                while (currentTime < maxTime)
+                {
+                    currentTime += Time.deltaTime;
+                    yield return null;
+                }
             }
         }
-
         yield break;
     }
 
@@ -167,6 +170,7 @@ public class TestLoggerPlugin : MonoBehaviour
         Debug.Log("Unity Alert Show");
         if (showLogs != null)
             StopCoroutine(showLogs);
+        ToShowLogs = false;
         _label.text = " ";
         _pluginInstance.Call("ShowAlert");
     }
