@@ -26,6 +26,7 @@ public class TestLoggerPlugin : MonoBehaviour
     private const string packName = "com.otranto_loger_plugin";
     private const string className = packName + ".Otranto_Logger";
     private int currentLogType;
+    private string[] tempArray;
 #if UNITY_ANDROID
 
 
@@ -34,7 +35,7 @@ public class TestLoggerPlugin : MonoBehaviour
     private AndroidJavaObject _pluginInstance;
     private AndroidJavaObject _unityActivity;
     public TextMeshProUGUI _label;
-    public Dropdown _dropdown;
+    private Coroutine showLogs;
 
     private void Start()
     {
@@ -132,19 +133,18 @@ public class TestLoggerPlugin : MonoBehaviour
     public void SendToReadFile()
     {
         string temp;
-        string[] tempArray;
         temp = _pluginInstance.Call<string>("readFromFile", "Logs.txt");
         tempArray = temp.Split("\n");
 
-       StartCoroutine(ShowLogsCorrutine(tempArray));
+        showLogs = StartCoroutine(ShowLogsCorrutine());
     }
 
-    private IEnumerator ShowLogsCorrutine(string[] tempArray)
+    private IEnumerator ShowLogsCorrutine()
     {
         for (int i = 0; i < tempArray.Length; i++)
         {
-            _label.text = "lOG : " + tempArray[i];
-            float maxTime = 5.0f;
+            _label.text = "lOG N° " + i +" : " + tempArray[i];
+            float maxTime = 2.5f;
             float currentTime = 0.0f;
             while (currentTime < maxTime)
             {
@@ -152,6 +152,7 @@ public class TestLoggerPlugin : MonoBehaviour
                 yield return null;
             }
         }
+
         yield break;
     }
 
@@ -164,23 +165,12 @@ public class TestLoggerPlugin : MonoBehaviour
     public void ShowAlert()
     {
         Debug.Log("Unity Alert Show");
+        if (showLogs != null)
+            StopCoroutine(showLogs);
+        _label.text = " ";
         _pluginInstance.Call("ShowAlert");
     }
 #endif
-    public void PrintErrorMessage()
-    {
-        Debug.LogError("Error Test");
-    }
-
-    public void PrintWarningMessage()
-    {
-        Debug.LogError("Warnig Test");
-    }
-
-    public void PrintDebugMessage()
-    {
-        Debug.LogError("Debug Test");
-    }
 }
 
 public class AndroidPluginCallback : AndroidJavaProxy
