@@ -28,6 +28,7 @@ public class Otranto_Logger
     static Otranto_Logger _instance = null;
     private static Activity unityActivity;
     AlertDialog.Builder builder;
+    public String filename;
     List<String> warnings = new ArrayList<>();
     List <String> errors = new ArrayList<>();
     List <String> debug = new ArrayList<>();
@@ -41,8 +42,8 @@ public class Otranto_Logger
     {
         Log.v(LOGTAG,"Android Create Alert");
         builder = new AlertDialog.Builder(unityActivity);
-        builder.setMessage("Example Text");
-        builder.setCancelable(true);
+        builder.setMessage("Do you want to delete the log file?");
+        builder.setCancelable(false);
         builder.setPositiveButton(
                 "Yes",
                 new DialogInterface.OnClickListener() {
@@ -50,6 +51,7 @@ public class Otranto_Logger
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Log.v(LOGTAG,"Clicked From Pluggin - YES");
                         alertCallback.onPositive("Clicked Yes");
+                        DeleteLogFile();
                         dialogInterface.cancel();
                     }
                 }
@@ -99,6 +101,7 @@ public class Otranto_Logger
 
     private void writeToFile(String fileName,String data)
     {
+        this.filename = fileName;
         Context context = unityActivity.getApplicationContext();
         File file = new File(context.getExternalFilesDir(null),fileName);
         Log.v("FileWriter", context.getExternalFilesDir(null).toString());
@@ -140,13 +143,29 @@ public class Otranto_Logger
         catch (FileNotFoundException e)
         {
             Log.e("login activity", "File not found: " + e.toString());
+            Toast.makeText(unityActivity.getApplicationContext(),"File not found: " + filename,Toast.LENGTH_SHORT).show();
             return e.toString();
         } catch (IOException e)
         {
             Log.e("login activity", "Can not read file: " + e.toString());
+            Toast.makeText(unityActivity.getApplicationContext(),"Can not read file: " + filename,Toast.LENGTH_SHORT).show();
             return e.toString();
         }
     }
 
+    public void DeleteLogFile()
+    {
+        Context context = unityActivity.getApplicationContext();
+        File logFile = new File(context.getExternalFilesDir(null), filename);
+        if (logFile.exists())
+        {
+            if (logFile.delete());
+            Toast.makeText(unityActivity.getApplicationContext(),"The file : " + filename + " has been deleted",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(unityActivity.getApplicationContext(),"The file : " + filename + " does not exist",Toast.LENGTH_SHORT).show();
+        }
+    }
 
 }

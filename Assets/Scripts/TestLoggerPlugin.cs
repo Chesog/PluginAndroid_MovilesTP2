@@ -1,6 +1,6 @@
 using System;
+using System.Collections;
 using TMPro;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -121,33 +121,38 @@ public class TestLoggerPlugin : MonoBehaviour
         currentLogType++;
         if (currentLogType >= 3)
             currentLogType = 0;
-        SendToWrite(data,currentLog);
+        SendToWrite(data, currentLog);
     }
 
     public void SendToWrite(string data, LogType fileType)
     {
-        _pluginInstance.Call("writeToFile","Logs.txt",data);
+        _pluginInstance.Call("writeToFile", "Logs.txt", data);
     }
 
-    public  void SendToReadFile()
+    public void SendToReadFile()
     {
         string temp;
         string[] tempArray;
         temp = _pluginInstance.Call<string>("readFromFile", "Logs.txt");
         tempArray = temp.Split("\n");
-        if (_dropdown != null)
+
+       StartCoroutine(ShowLogsCorrutine(tempArray));
+    }
+
+    private IEnumerator ShowLogsCorrutine(string[] tempArray)
+    {
+        for (int i = 0; i < tempArray.Length; i++)
         {
-            for (int i = 0; i < tempArray.Length; i++)
+            _label.text = "lOG : " + tempArray[i];
+            float maxTime = 5.0f;
+            float currentTime = 0.0f;
+            while (currentTime < maxTime)
             {
-                if (i < 3)
-                    _dropdown.options[i].text = tempArray[i];
-                else
-                {
-                    _dropdown.options.Add(null);
-                    _dropdown.options[i].text = tempArray[i];
-                }
+                currentTime += Time.deltaTime;
+                yield return null;
             }
         }
+        yield break;
     }
 
     public void CreateAlert()
