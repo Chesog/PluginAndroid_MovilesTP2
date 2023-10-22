@@ -1,6 +1,8 @@
 using System;
 using TMPro;
+using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
 Profesor: Rodrigo Corral
@@ -32,6 +34,7 @@ public class TestLoggerPlugin : MonoBehaviour
     private AndroidJavaObject _pluginInstance;
     private AndroidJavaObject _unityActivity;
     public TextMeshProUGUI _label;
+    public Dropdown _dropdown;
 
     private void Start()
     {
@@ -94,43 +97,57 @@ public class TestLoggerPlugin : MonoBehaviour
 
     public void CreateLog(string message)
     {
+        string data = "";
         LogType currentLog = LogType.Log;
         switch (currentLogType)
         {
             case 0:
                 Debug.Log("Debug Log - " + message);
-                _label.text = "Debug Log - " + message;
                 currentLog = LogType.Log;
+                data = "Debug Log - " + message;
                 break;
             case 1:
                 Debug.Log("Warning Log - " + message);
-                _label.text = "Warning Log - " + message;
                 currentLog = LogType.Warning;
+                data = "Warning Log - " + message;
                 break;
             case 2:
                 Debug.Log("Error Log - " + message);
-                _label.text = "Error Log - " + message;
                 currentLog = LogType.Error;
+                data = "Error Log - " + message;
                 break;
         }
 
         currentLogType++;
         if (currentLogType >= 3)
             currentLogType = 0;
-        SendToWrite(_label.text,currentLog);
+        SendToWrite(data,currentLog);
     }
 
     public void SendToWrite(string data, LogType fileType)
     {
-        _pluginInstance.Call("writeToFile", data, fileType.ToString());
+        _pluginInstance.Call("writeToFile","Logs.txt",data);
     }
 
     public  void SendToReadFile()
     {
-        _label.text = _pluginInstance.Call<string>("readFromFile", "Log") + " Read File";
-        
-        //_label.text = _pluginInstance.Call<string>("readFromFile", "Warning");
-        //_label.text = _pluginInstance.Call<string>("readFromFile", "Error");
+        string temp;
+        string[] tempArray;
+        temp = _pluginInstance.Call<string>("readFromFile", "Logs.txt");
+        tempArray = temp.Split("\n");
+        if (_dropdown != null)
+        {
+            for (int i = 0; i < tempArray.Length; i++)
+            {
+                if (i < 3)
+                    _dropdown.options[i].text = tempArray[i];
+                else
+                {
+                    _dropdown.options.Add(null);
+                    _dropdown.options[i].text = tempArray[i];
+                }
+            }
+        }
     }
 
     public void CreateAlert()

@@ -5,14 +5,20 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -91,13 +97,28 @@ public class Otranto_Logger
         return LOGTAG;
     }
 
-    private void writeToFile(String data,String fileName)
+    private void writeToFile(String fileName,String data)
     {
         Context context = unityActivity.getApplicationContext();
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(fileName + ".txt", Context.MODE_PRIVATE));
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
+        File file = new File(context.getExternalFilesDir(null),fileName);
+        Log.v("FileWriter", context.getExternalFilesDir(null).toString());
+        try
+        {
+            FileWriter fileWriter = new FileWriter(file, true);
+            for (int i = 0; i < debug.size(); i++)
+            {
+                fileWriter.append(debug.get(i)).append("\n");
+            }
+            for (int i = 0; i < warnings.size(); i++)
+            {
+                fileWriter.append(warnings.get(i)).append("\n");
+            }
+            for (int i = 0; i < errors.size(); i++)
+            {
+                fileWriter.append(errors.get(i)).append("\n");
+            }
+            fileWriter.close();
+            Toast.makeText(unityActivity.getApplicationContext(), "write to file - "+ data + " - " + fileName,Toast.LENGTH_SHORT).show();
         }
         catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
@@ -107,31 +128,25 @@ public class Otranto_Logger
     private String readFromFile(String fileName)
     {
         Context context = unityActivity.getApplicationContext();
-        String ret = "";
-
-        try {
-            InputStream inputStream = context.openFileInput(fileName + ".txt");
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append("\n").append(receiveString);
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
+        File readFrom = new File(context.getExternalFilesDir(null),fileName);
+        Log.v("FileReader", context.getExternalFilesDir(null).toString());
+        byte[] content = new byte[(int)readFrom.length()];
+        try
+        {
+            FileInputStream inputStream =  new FileInputStream(readFrom);
+            inputStream.read(content);
+            return new String(content);
         }
-        catch (FileNotFoundException e) {
+        catch (FileNotFoundException e)
+        {
             Log.e("login activity", "File not found: " + e.toString());
-        } catch (IOException e) {
+            return e.toString();
+        } catch (IOException e)
+        {
             Log.e("login activity", "Can not read file: " + e.toString());
+            return e.toString();
         }
-
-        return ret;
     }
+
+
 }
