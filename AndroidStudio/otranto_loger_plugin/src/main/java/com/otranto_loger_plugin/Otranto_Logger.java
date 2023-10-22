@@ -64,16 +64,19 @@ public class Otranto_Logger
     public void SendLog(String log)
     {
         this.debug.add(log);
+        Log.v(LOGTAG,"Android Added debug Log - " + log);
     }
 
     public void SendWarning(String warning)
     {
         this.warnings.add(warning);
+        Log.v(LOGTAG,"Android Added warning Log - " + warning);
     }
 
     public void SendError(String error)
     {
         this.errors.add(error);
+        Log.v(LOGTAG,"Android Added error Log - " + error);
     }
 
     public String GetLOGTAG()

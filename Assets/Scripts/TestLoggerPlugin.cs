@@ -28,14 +28,38 @@ public class TestLoggerPlugin : MonoBehaviour
                 Debug.Log("Plugin Instance is NULL");
                 return;
             }
-
+            Application.logMessageReceived += Application_logMessageReceived;
             _pluginInstance.CallStatic("reciveUnityActivity",_unityActivity);
             
             CreateAlert();
             Debug.Log("Unity Java Class Created");
         }
     }
-    
+
+    private void Application_logMessageReceived(string condition, string stacktrace, LogType type)
+    {
+        switch (type)
+        {
+            case LogType.Error:
+                _pluginInstance.Call("SendError",condition);
+                break;
+            case LogType.Assert:
+                Debug.Log("AssertLog");
+                break;
+            case LogType.Warning:
+                _pluginInstance.Call("SendWarning",condition);
+                break;
+            case LogType.Log:
+                _pluginInstance.Call("SendLog",condition);
+                break;
+            case LogType.Exception:
+                Debug.Log("ExceptionLog");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
+    }
+
     public void RunPlugin()
     {
         Debug.Log("Runing Plugin");
@@ -55,6 +79,9 @@ public class TestLoggerPlugin : MonoBehaviour
         _pluginInstance.Call("ShowAlert");
     }
 #endif
+    public void PrintErrorMessage() {Debug.LogError("Error Test"); }
+    public void PrintWarningMessage() {Debug.LogError("Warnig Test"); }
+    public void PrintDebugMessage() {Debug.LogError("Debug Test"); }
 }
 
 public class AndroidPluginCallback : AndroidJavaProxy
